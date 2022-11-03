@@ -1,12 +1,12 @@
-#include <iostream>
-#include <random>
 #include <algorithm>
 #include <ctime>
+#include <iostream>
+#include <random>
 
-#include "chatlogic.h"
-#include "graphnode.h"
-#include "graphedge.h"
 #include "chatbot.h"
+#include "chatlogic.h"
+#include "graphedge.h"
+#include "graphnode.h"
 
 // constructor WITHOUT memory allocation
 ChatBot::ChatBot()
@@ -21,7 +21,7 @@ ChatBot::ChatBot()
 ChatBot::ChatBot(std::string filename)
 {
     std::cout << "ChatBot Constructor" << std::endl;
-    
+
     // invalidate data handles
     _chatLogic = nullptr;
     _rootNode = nullptr;
@@ -35,7 +35,7 @@ ChatBot::~ChatBot()
     std::cout << "ChatBot Destructor" << std::endl;
 
     // deallocate heap memory
-    if(_image != NULL) // Attention: wxWidgets used NULL and not nullptr
+    if (_image != NULL) // Attention: wxWidgets used NULL and not nullptr
     {
         delete _image;
         _image = NULL;
@@ -44,6 +44,89 @@ ChatBot::~ChatBot()
 
 //// STUDENT CODE
 ////
+
+// Copy constructor - shallow copy
+ChatBot::ChatBot(const ChatBot &other)
+{
+    std::cout << "ChatBot Copy Constructor" << std::endl;
+
+    _image = other._image;
+    _currentNode = other._currentNode;
+    _rootNode = other._rootNode;
+    _chatLogic = other._chatLogic;
+}
+
+// Copy assigment
+ChatBot &ChatBot::operator=(const ChatBot &rhs)
+{
+    std::cout << "ChatBot Copy Assigment" << std::endl;
+
+    if (this != &rhs)
+    {
+        // clear this
+        if (_image)
+            delete _image;
+        if (_chatLogic)
+            delete _chatLogic;
+        if (_currentNode)
+            delete _currentNode;
+        if (_rootNode)
+            delete _rootNode;
+
+        // copy
+        _image = rhs._image;
+        _chatLogic = rhs._chatLogic;
+        _currentNode = rhs._currentNode;
+        _rootNode = rhs._rootNode;
+    }
+    return *this;
+}
+
+// Move constructor
+ChatBot::ChatBot(ChatBot &&other)
+{
+    std::cout << "ChatBot Move Constructor" << std::endl;
+
+    _image = other._image;
+    _currentNode = other._currentNode;
+    _rootNode = other._rootNode;
+    _chatLogic = other._chatLogic;
+
+    other._image = nullptr;
+    other._currentNode = nullptr;
+    other._rootNode = nullptr;
+    other._chatLogic = nullptr;
+}
+
+// Move assigment
+ChatBot &ChatBot::operator=(ChatBot &&rhs)
+{
+    std::cout << "ChatBot Move Assigment" << std::endl;
+
+    if (this != &rhs)
+    {
+        if (_image)
+            delete _image;
+        if (_chatLogic)
+            delete _chatLogic;
+        if (_currentNode)
+            delete _currentNode;
+        if (_rootNode)
+            delete _rootNode;
+
+        // copy
+        _image = rhs._image;
+        _chatLogic = rhs._chatLogic;
+        _currentNode = rhs._currentNode;
+        _rootNode = rhs._rootNode;
+
+        rhs._image = nullptr;
+        rhs._chatLogic = nullptr;
+        rhs._currentNode = nullptr;
+        rhs._rootNode = nullptr;
+    }
+    return *this;
+}
 
 ////
 //// EOF STUDENT CODE
@@ -69,8 +152,13 @@ void ChatBot::ReceiveMessageFromUser(std::string message)
     if (levDists.size() > 0)
     {
         // sort in ascending order of Levenshtein distance (best fit is at the top)
-        std::sort(levDists.begin(), levDists.end(), [](const EdgeDist &a, const EdgeDist &b) { return a.second < b.second; });
-        newNode = levDists.at(0).first->GetChildNode(); // after sorting the best edge is at first position
+        std::sort(levDists.begin(), levDists.end(),
+                  [](const EdgeDist &a, const EdgeDist &b)
+                  {
+                      return a.second < b.second;
+                  });
+        newNode = levDists.at(0).first->GetChildNode(); // after sorting the best
+                                                        // edge is at first position
     }
     else
     {
@@ -118,13 +206,15 @@ int ChatBot::ComputeLevenshteinDistance(std::string s1, std::string s2)
         costs[k] = k;
 
     size_t i = 0;
-    for (std::string::const_iterator it1 = s1.begin(); it1 != s1.end(); ++it1, ++i)
+    for (std::string::const_iterator it1 = s1.begin(); it1 != s1.end();
+         ++it1, ++i)
     {
         costs[0] = i + 1;
         size_t corner = i;
 
         size_t j = 0;
-        for (std::string::const_iterator it2 = s2.begin(); it2 != s2.end(); ++it2, ++j)
+        for (std::string::const_iterator it2 = s2.begin(); it2 != s2.end();
+             ++it2, ++j)
         {
             size_t upper = costs[j + 1];
             if (*it1 == *it2)
