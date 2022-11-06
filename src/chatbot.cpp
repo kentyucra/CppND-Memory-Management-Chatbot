@@ -45,12 +45,14 @@ ChatBot::~ChatBot()
 //// STUDENT CODE
 ////
 
-// Copy constructor - shallow copy
+// Copy constructor
 ChatBot::ChatBot(const ChatBot &other)
 {
     std::cout << "ChatBot Copy Constructor" << std::endl;
 
-    _image = other._image;
+    _image = new wxBitmap();
+    *_image = *(other._image);
+
     _currentNode = other._currentNode;
     _rootNode = other._rootNode;
     _chatLogic = other._chatLogic;
@@ -75,7 +77,8 @@ ChatBot &ChatBot::operator=(const ChatBot &rhs)
             delete _rootNode;
 
         // copy
-        _image = rhs._image;
+        _image = new wxBitmap();
+        *_image = *(rhs._image);
         _chatLogic = rhs._chatLogic;
         _currentNode = rhs._currentNode;
         _rootNode = rhs._rootNode;
