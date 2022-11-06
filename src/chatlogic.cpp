@@ -242,13 +242,11 @@ void ChatLogic::LoadAnswerGraphFromFile(std::string filename)
         }
     }
 
-    ChatBot chatBot(filename);
+    ChatBot chatBot = ChatBot("../images/chatbot.png");
     chatBot.SetChatLogicHandle(this);
-    chatBot.SetRootNode(rootNode);
-
     // The only place make sense to me to get the _chatbot for ChatLogic is here,
-    // Tests a lot of place where to put it
     _chatBot = &chatBot;
+    chatBot.SetRootNode(rootNode);
 
     rootNode->MoveChatbotHere(std::move(chatBot));
 
