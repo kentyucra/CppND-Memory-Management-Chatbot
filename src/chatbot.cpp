@@ -54,6 +54,7 @@ ChatBot::ChatBot(const ChatBot &other)
     _currentNode = other._currentNode;
     _rootNode = other._rootNode;
     _chatLogic = other._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
 }
 
 // Copy assigment
@@ -78,6 +79,7 @@ ChatBot &ChatBot::operator=(const ChatBot &rhs)
         _chatLogic = rhs._chatLogic;
         _currentNode = rhs._currentNode;
         _rootNode = rhs._rootNode;
+        _chatLogic->SetChatbotHandle(this);
     }
     return *this;
 }
@@ -91,6 +93,7 @@ ChatBot::ChatBot(ChatBot &&other)
     _currentNode = other._currentNode;
     _rootNode = other._rootNode;
     _chatLogic = other._chatLogic;
+    _chatLogic->SetChatbotHandle(this);
 
     other._image = nullptr;
     other._currentNode = nullptr;
@@ -105,20 +108,13 @@ ChatBot &ChatBot::operator=(ChatBot &&rhs)
 
     if (this != &rhs)
     {
-        if (_image)
-            delete _image;
-        if (_chatLogic)
-            delete _chatLogic;
-        if (_currentNode)
-            delete _currentNode;
-        if (_rootNode)
-            delete _rootNode;
-
         // copy
         _image = rhs._image;
         _chatLogic = rhs._chatLogic;
         _currentNode = rhs._currentNode;
         _rootNode = rhs._rootNode;
+
+        _chatLogic->SetChatbotHandle(this);
 
         rhs._image = nullptr;
         rhs._chatLogic = nullptr;
